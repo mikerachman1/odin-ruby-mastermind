@@ -10,6 +10,7 @@ class MasterMind
     @guesses_left = 12
     @guess = nil
     @feedback = []
+    @winner = 0
   end
   
   #private
@@ -39,7 +40,7 @@ class MasterMind
   end
 
   #private
-  def check_guess #PROBLEM WITH MULTIPLES AND INDEXING
+  def check_guess 
     @guess.each_with_index do |number, index|
       if @secret_code[index] == number # matches both number and position
         @feedback.push(2)
@@ -54,9 +55,29 @@ class MasterMind
     @secret_code = @secret_code_immutable
   end
 
+  #private
+  def give_feedback
+    p @feedback
+    exactly_correct = 0
+    right_num_wrong_spot = 0
+    @feedback.each do |number|
+        if number == 2
+            exactly_correct += 1
+        elsif number == 1
+            right_num_wrong_spot += 1
+        end
+    end
+    puts "Your guess contains:\n#{exactly_correct} Exactly correct\n#{right_num_wrong_spot} Right number, wrong position."
+    if exactly_correct == 4
+        @winner = 1
+        puts "The secret code was guessed!"
+    end
+  end
+
 end
 
 game = MasterMind.new
 game.create_code
 game.make_guess
 game.check_guess
+game.give_feedback
