@@ -41,6 +41,33 @@ class MasterMind
       end
     end
 
+    public #change to priv
+    def computer_guess
+      available_indexes = [0, 1, 2, 3]
+      if @guess == nil #first comp guess
+        @guess = [1, 1, 2, 2]
+      else  #any guess other than first guess
+        @feedback.each_with_index do |number, index|
+          if number == 2 #exactly right
+            #push num from previous guess to new guess
+            @guess[index] = @guess[index]
+            available_indexes.delete(index)
+          elsif number == 1 #righ num wrong place
+            #use num from previous guess in different position
+            @guess[(available_indexes.sample)] = @guess[index]
+          else #wrong number
+            #Don't use that number again in guesses
+            @numbers.delete(@guess[index])
+            #use other possible number in that position
+            @guess[index] = @numbers.sample
+          end
+        end
+      end
+      puts "The computer guessed: #{@guess}"
+      @guesses_left -=1
+      @feedback = []
+    end
+
     private
     def make_guess
       begin
@@ -59,7 +86,8 @@ class MasterMind
     end
   
     private
-    def check_guess 
+    def check_guess
+      @feedback = [] 
       @guess.each_with_index do |number, index|
         if @secret_code[index] == number # matches both number and position
           @feedback.push(2)
@@ -86,8 +114,8 @@ class MasterMind
               right_num_wrong_spot += 1
           end
       end
-      @feedback = []
-      puts "Your guess contains:\n#{exactly_correct} Exactly correct\n#{right_num_wrong_spot} Right number, wrong position\n#{@guesses_left} Guesses left"
+
+      puts "The guess contains:\n#{exactly_correct} Exactly correct\n#{right_num_wrong_spot} Right number, wrong position\n#{@guesses_left} Guesses left"
       if exactly_correct == 4
           @winner = 1
           puts "The secret code was guessed! Codebreaker wins!"
@@ -117,6 +145,9 @@ class MasterMind
                 puts "No guesses left! #{@user} wins!"
                 break
             end
+            computer_guess
+            check_guess
+            give_feedback
         end
         puts "GAME OVER"
       end
@@ -124,5 +155,4 @@ class MasterMind
   end
   
   game = MasterMind.new
-  game.user_created_code
-  #game.play_game
+  game.play_game
