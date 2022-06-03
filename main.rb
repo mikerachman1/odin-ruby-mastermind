@@ -13,7 +13,7 @@ class MasterMind
     @winner = 0
   end
   
-  #private
+  private
   def create_code
     4.times do
         num = rand(0..5)
@@ -22,7 +22,7 @@ class MasterMind
     end
   end
 
-  #private
+  private
   def make_guess
     begin
       puts "Enter your guess."
@@ -39,7 +39,7 @@ class MasterMind
     end
   end
 
-  #private
+  private
   def check_guess 
     @guess.each_with_index do |number, index|
       if @secret_code[index] == number # matches both number and position
@@ -52,12 +52,12 @@ class MasterMind
         @feedback.push(0)
       end
     end
-    @secret_code = @secret_code_immutable
+    @secret_code = []
+    @secret_code_immutable.each { |num| @secret_code.push(num) }
   end
 
-  #private
+  private
   def give_feedback
-    p @feedback
     exactly_correct = 0
     right_num_wrong_spot = 0
     @feedback.each do |number|
@@ -67,17 +67,29 @@ class MasterMind
             right_num_wrong_spot += 1
         end
     end
-    puts "Your guess contains:\n#{exactly_correct} Exactly correct\n#{right_num_wrong_spot} Right number, wrong position."
+    @feedback = []
+    puts "Your guess contains:\n#{exactly_correct} Exactly correct\n#{right_num_wrong_spot} Right number, wrong position\n#{@guesses_left} Guesses left"
     if exactly_correct == 4
         @winner = 1
-        puts "The secret code was guessed!"
+        puts "The secret code was guessed! Codebreaker wins!"
     end
   end
 
+  public
+  def play_game
+    create_code
+    while @winner == 0
+        if @guesses_left == 0
+            puts "No guesses left! Codemaker wins!\nSecret Code was #{@secret_code}"
+            break
+        end
+        make_guess
+        check_guess
+        give_feedback
+    end
+    puts "GAME OVER"
+  end
 end
 
 game = MasterMind.new
-game.create_code
-game.make_guess
-game.check_guess
-game.give_feedback
+game.play_game
