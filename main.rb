@@ -63,6 +63,9 @@ class MasterMind
           end
         end
       end
+      if @guess.include?(nil)
+        @guess.map! { |num| num == nil ? rand(1..6) : num }
+      end
       puts "The computer guessed: #{@guess}"
       @guesses_left -=1
       @feedback = []
